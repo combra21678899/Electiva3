@@ -4,9 +4,7 @@ void main() {
   runApp(const MyApp());
 }
 
-// ─────────────────────────────────────────
 // MODELOS
-// ─────────────────────────────────────────
 
 class User {
   final String nombre;
@@ -40,16 +38,12 @@ class Event {
   });
 }
 
-// ─────────────────────────────────────────
-// SIMULACIÓN BASE DE DATOS
-// ─────────────────────────────────────────
+// BASE DE DATOS EN MEMORIA
 
 List<User> users = [];
 List<Event> events = [];
 
-// ─────────────────────────────────────────
-// APP
-// ─────────────────────────────────────────
+// APP PRINCIPAL
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -62,35 +56,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-        scaffoldBackgroundColor: const Color(0xFFF4F6FA),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide.none,
-          ),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.indigo,
-            foregroundColor: Colors.white,
-            elevation: 3,
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
-          ),
-        ),
       ),
       home: const LoginPage(),
     );
   }
 }
 
-// ─────────────────────────────────────────
 // LOGIN
-// ─────────────────────────────────────────
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -105,8 +77,6 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
 
   void login() {
-    FocusScope.of(context).unfocus();
-
     if (_formKey.currentState!.validate()) {
       final user = users.firstWhere(
         (u) =>
@@ -123,9 +93,6 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (user.email.isNotEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Inicio de sesión exitoso')),
-        );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const CrearEventosPage()),
@@ -142,68 +109,50 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.all(30),
-            margin: const EdgeInsets.symmetric(horizontal: 30),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(25),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
+        child: Padding(
+          padding: const EdgeInsets.all(30),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.event, size: 80, color: Colors.indigo),
+                const SizedBox(height: 20),
+                const Text(
+                  'Bienvenido',
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 25),
+                TextFormField(
+                  controller: emailController,
+                  decoration: const InputDecoration(labelText: 'Correo electrónico'),
+                  validator: (value) => value!.isEmpty ? 'Ingrese su correo' : null,
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(labelText: 'Contraseña'),
+                  validator: (value) => value!.isEmpty ? 'Ingrese su contraseña' : null,
+                ),
+                const SizedBox(height: 25),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: login,
+                    child: const Text('Ingresar'),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const RegisterPage()),
+                    );
+                  },
+                  child: const Text('Crear cuenta'),
                 ),
               ],
-            ),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.event, size: 80, color: Colors.indigo),
-                  const SizedBox(height: 15),
-                  const Text(
-                    'Bienvenido',
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 25),
-                  TextFormField(
-                    controller: emailController,
-                    decoration: const InputDecoration(labelText: 'Correo electrónico'),
-                    validator: (value) => value!.isEmpty ? 'Ingrese su correo' : null,
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: passwordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Contraseña'),
-                    validator: (value) => value!.isEmpty ? 'Ingrese su contraseña' : null,
-                  ),
-                  const SizedBox(height: 25),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: login,
-                      child: const Text('Ingresar'),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const RegisterPage()),
-                      );
-                    },
-                    child: const Text('Crear cuenta'),
-                  ),
-                ],
-              ),
             ),
           ),
         ),
@@ -212,9 +161,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-// ─────────────────────────────────────────
 // REGISTRO
-// ─────────────────────────────────────────
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -233,8 +180,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final passwordController = TextEditingController();
 
   void register() {
-    FocusScope.of(context).unfocus();
-
     if (_formKey.currentState!.validate()) {
       users.add(
         User(
@@ -246,11 +191,6 @@ class _RegisterPageState extends State<RegisterPage> {
           password: passwordController.text,
         ),
       );
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cuenta creada correctamente')),
-      );
-
       Navigator.pop(context);
     }
   }
@@ -266,44 +206,35 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Crear Cuenta'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Crear Cuenta')),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                buildField(nombreController, 'Nombre'),
-                const SizedBox(height: 15),
-                buildField(apellidoController, 'Apellido'),
-                const SizedBox(height: 15),
-                buildField(emailController, 'Correo'),
-                const SizedBox(height: 15),
-                buildField(celularController, 'Celular'),
-                const SizedBox(height: 15),
-                buildField(paisController, 'País'),
-                const SizedBox(height: 15),
-                TextFormField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Contraseña'),
-                  validator: (value) =>
-                      value!.length < 6 ? 'Mínimo 6 caracteres' : null,
-                ),
-                const SizedBox(height: 25),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: register,
-                    child: const Text('Crear Cuenta'),
-                  ),
-                ),
-              ],
-            ),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              buildField(nombreController, 'Nombre'),
+              const SizedBox(height: 15),
+              buildField(apellidoController, 'Apellido'),
+              const SizedBox(height: 15),
+              buildField(emailController, 'Correo'),
+              const SizedBox(height: 15),
+              buildField(celularController, 'Celular'),
+              const SizedBox(height: 15),
+              buildField(paisController, 'País'),
+              const SizedBox(height: 15),
+              TextFormField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Contraseña'),
+                validator: (value) => value!.length < 6 ? 'Mínimo 6 caracteres' : null,
+              ),
+              const SizedBox(height: 25),
+              ElevatedButton(
+                onPressed: register,
+                child: const Text('Crear Cuenta'),
+              ),
+            ],
           ),
         ),
       ),
@@ -311,9 +242,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 }
 
-// ─────────────────────────────────────────
 // LISTA DE EVENTOS
-// ─────────────────────────────────────────
 
 class CrearEventosPage extends StatefulWidget {
   const CrearEventosPage({super.key});
@@ -347,65 +276,21 @@ class _CrearEventosPageState extends State<CrearEventosPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Eventos'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Eventos')),
       body: events.isEmpty
-          ? const Center(
-              child: Text(
-                'No hay eventos creados',
-                style: TextStyle(fontSize: 18),
-              ),
-            )
+          ? const Center(child: Text('No hay eventos creados'))
           : ListView.builder(
               itemCount: events.length,
               itemBuilder: (context, index) {
                 final event = events[index];
-                return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(18),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(16),
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.indigo.withOpacity(0.1),
-                      child: Icon(
-                        getIcon(event.type),
-                        color: Colors.indigo,
-                      ),
-                    ),
-                    title: Text(
-                      event.title,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text('${event.type} • ${event.date}'),
-                    onTap: () => showDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        title: Text(event.title),
-                        content: Text(event.description),
-                      ),
-                    ),
-                  ),
+                return ListTile(
+                  leading: Icon(getIcon(event.type)),
+                  title: Text(event.title),
+                  subtitle: Text('${event.type} • ${event.date}'),
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton.extended(
-        icon: const Icon(Icons.add),
-        label: const Text('Nuevo'),
+      floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final newEvent = await Navigator.push(
             context,
@@ -413,14 +298,13 @@ class _CrearEventosPageState extends State<CrearEventosPage> {
           );
           if (newEvent != null) addEvent(newEvent);
         },
+        child: const Icon(Icons.add),
       ),
     );
   }
 }
 
-// ─────────────────────────────────────────
 // FORMULARIO CREAR EVENTO
-// ─────────────────────────────────────────
 
 class CrearEventoFormPage extends StatefulWidget {
   const CrearEventoFormPage({super.key});
@@ -445,8 +329,6 @@ class _CrearEventoFormPageState extends State<CrearEventoFormPage> {
   ];
 
   void saveEvent() {
-    FocusScope.of(context).unfocus();
-
     if (_formKey.currentState!.validate()) {
       final newEvent = Event(
         title: titleController.text,
@@ -461,10 +343,7 @@ class _CrearEventoFormPageState extends State<CrearEventoFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Crear Evento'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Crear Evento')),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Form(
@@ -473,7 +352,7 @@ class _CrearEventoFormPageState extends State<CrearEventoFormPage> {
             children: [
               TextFormField(
                 controller: titleController,
-                decoration: const InputDecoration(labelText: 'Título del evento'),
+                decoration: const InputDecoration(labelText: 'Título'),
                 validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
               ),
               const SizedBox(height: 20),
@@ -483,30 +362,13 @@ class _CrearEventoFormPageState extends State<CrearEventoFormPage> {
                     .map((type) => DropdownMenuItem(value: type, child: Text(type)))
                     .toList(),
                 onChanged: (value) => setState(() => selectedType = value!),
-                decoration: const InputDecoration(labelText: 'Tipo de evento'),
+                decoration: const InputDecoration(labelText: 'Tipo'),
               ),
               const SizedBox(height: 20),
               TextFormField(
                 controller: dateController,
-                readOnly: true,
-                decoration: const InputDecoration(
-                  labelText: 'Fecha',
-                  suffixIcon: Icon(Icons.calendar_today),
-                ),
-                onTap: () async {
-                  FocusScope.of(context).unfocus();
-                  final pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2024),
-                    lastDate: DateTime(2030),
-                  );
-                  if (pickedDate != null) {
-                    dateController.text =
-                        '${pickedDate.day}/${pickedDate.month}/${pickedDate.year}';
-                  }
-                },
-                validator: (value) => value!.isEmpty ? 'Seleccione una fecha' : null,
+                decoration: const InputDecoration(labelText: 'Fecha'),
+                validator: (value) => value!.isEmpty ? 'Seleccione fecha' : null,
               ),
               const SizedBox(height: 20),
               TextFormField(
@@ -515,7 +377,7 @@ class _CrearEventoFormPageState extends State<CrearEventoFormPage> {
                 decoration: const InputDecoration(labelText: 'Descripción'),
                 validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 25),
               ElevatedButton(
                 onPressed: saveEvent,
                 child: const Text('Guardar Evento'),
